@@ -1,7 +1,8 @@
 const express = require("express");
 const mongoose = require('mongoose');
-const expressGraphQL = require('express-graphql');
 const db = require('./config/keys').mongoURI;
+const expressGraphQL = require('express-graphql');
+const schema = require('./schema/schema');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -12,6 +13,7 @@ mongoose
 
 app.use('/graphql', expressGraphQL({
     graphiql: true,
+    schema,
 }))
 
 app.get('/', (req, res) => {
