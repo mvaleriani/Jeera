@@ -10,25 +10,27 @@ const validateInputs = ({ email, name, password }) => {
     name = isValidText(name) ? name : "";
     password = isValidText(password) ? password : "";
 
+    let messages = [];
+    let isValid;
+
     if (!isEmail(email)) {
-        return { message: "Email is invalid", isValid: false }
+        messages.push("Email is invalid");
     }
-
     if (isEmpty(email)) {
-        return { message: "Email field is required", isValid: false }
+        messages.push("Email field is required");
     }
-
     if (isEmpty(name)) {
-        return { message: "Name field is required", isValid: false }
+        messages.push("Name field is required");
+    }
+    if (isEmpty(password)) {
+        messages.push("Password field is required");
     }
 
-    if (isEmpty(password)) {
-        return { message: "Password field is required", isValid: false }
-    }
+    isValid = messages.length > 0 
 
     return ({
-        message: "",
-        isValid: true
+        messages,
+        isValid
     });
 };
 
