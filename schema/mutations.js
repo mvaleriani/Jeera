@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const AuthService = require('../services/auth')
 
 const UserType = require('./user_type');
-const User = mongoose.model('user')
+// const User = mongoose.model('user')
 
 const Mutations = new GraphQLObjectType({
     name: 'Mutations',
@@ -16,8 +16,8 @@ const Mutations = new GraphQLObjectType({
                 email: { type: new GraphQLNonNull(GraphQLString) },
                 password: { type: new GraphQLNonNull(GraphQLString) }
             },
-            resolve: (parentValue, data) => {
-                return AuthService.registerUser(data); 
+            resolve: (_, args) => {
+                return AuthService.registerUser(args); 
             }
         },
         loginUser: {
@@ -26,8 +26,17 @@ const Mutations = new GraphQLObjectType({
                 email: { type: new GraphQLNonNull(GraphQLString) },
                 password: { type: new GraphQLNonNull(GraphQLString) }
             },
-            resolve: (parentValue, data) => {
-                return "merp"
+            resolve: (_, args) => {
+                return AuthService.loginUser(args)
+            }
+        },
+        logoutUser: {
+            type: UserType,
+            args: {
+                _id: { type: new GraphQLNonNull(GraphQLID) }
+            },
+            resolve: (_, args) => {
+                return AuthService.logoutUser(args);
             }
         }
     }

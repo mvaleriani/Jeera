@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
-const validateInputs = require('../validations/valid_text')
+const { validateRegInput, validateLoginInput } = require('../validations/validateInput')
+
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../config/keys')
@@ -8,10 +9,8 @@ const User = mongoose.model('user')
 
 const registerUser = async data => {
     try {
-        const { messages, isValid } = validateInputs(data)
-        if (!isValid) {
-            throw new Error(messages.join(' / '))
-        }
+        const { messages, isValid } = validateRegInput(data)
+        if (!isValid) throw new Error(messages)
 
         const { name, email, password } = data;
         
@@ -36,7 +35,7 @@ const registerUser = async data => {
 
         const token = jwt.sign({ id: newUser._id }, keys.tokenGenKey)
 
-        return { token, loggedIn: true, ...newUser._doc, passwordHash: null}
+        return { token, loggedIn: true, ...newUser._doc, passwordHash: null }
     } catch (err) {
         throw err;
     }
@@ -44,23 +43,62 @@ const registerUser = async data => {
 
 const loginUser = async (data) => {
     try {
+        const { messages, isValid } = validateLoginInput(data)
+        
+        if (!isValid) throw new Error(messages)
+        
         const { email, password } = data
         const existingUser = await User.findOne({ email })
 
-        if (!existingUser) {
-            throw new Error("Email does not belong to an existing user")
-        }
+        if (!existingUser) throw new Error("User does not exist")
 
         const isValidPassword = await bcrypt.compare(password, existingUser.passwordHash)
 
-    } catch (err) {
+        if (!isValidPassword) throw new Error('Password invalid')
 
+        const token = jwt.sign({ id: existingUser._id }, keys.tokenGenKey)
+        
+        return { token, loggedIn: true, ...existingUser._doc, passwordHash: null }
+    } catch (err) {
+        throw err;
     }
 }
 
+const logoutUser = async (data) => {
+    try {
+        const { _id } = data;
+
+        const existingUser = await User.findById(_id)
+
+        if (!existingUser) throw new Error('User does not exist')
+
+        return { token: "", loggedIn: false, ...existingUser._doc, passwordHash: null }
+    } catch (err) {
+        throw err
+    }
+}
+
+const verifyUserToken = async (data) => {
+    try {
+        const { token } = data;
+        const decoded = jwt.verify(token, keys.tokenGenKey);
+        const { id } = decoded;
+
+        const loggedIn = await User.findById(id).then((user) => {
+            return user ? true : false;
+        })
+
+        return { loggedIn }
+    } catch (err) {
+        return { loggedIn: false }
+    }
+};
+
 const AuthService = {
     registerUser,
-    // loginUser
+    loginUser,
+    logoutUser,
+    verifyUserToken
 }
 
 module.exports = AuthService;
