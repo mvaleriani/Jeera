@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { SignUpForm } from './SignUpForm';
 
 const StyledApp = styled.main`
   width: 100vw;
@@ -10,7 +11,9 @@ const StyledApp = styled.main`
 
 function App() {
   return (
-    <StyledApp>Frontend App</StyledApp>
+    <StyledApp>
+      <SignUpForm></SignUpForm>
+    </StyledApp>
   );
 }
 

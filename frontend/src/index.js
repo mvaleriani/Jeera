@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 import { InMemoryCache } from 'apollo-cache-inmemory';
+import "./reset.css"
 
 const cache = new InMemoryCache({
   dataIdFromObject: object => object.id || null
