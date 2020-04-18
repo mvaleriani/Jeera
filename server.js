@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const db = require('./config/keys').mongoURI;
 const expressGraphQL = require('express-graphql');
 const schema = require('./schema/schema');
@@ -12,12 +13,18 @@ mongoose
     .then(() => console.log(`Connected to Mongo`))
     .catch(err => console.log(err))
 
+// MIDDLEWARE ==========================================
+
 server.use(bodyParser.json())
+
+server.use(cors())
 
 server.use('/graphql', expressGraphQL({
     graphiql: true,
     schema,
 }));
+
+// =====================================================
 
 server.get('/', (req, res) => {
     res.send('Yes, this is server')

@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useInput } from '../hooks/useInput'
 import { TextInputField, Palatte } from '../styling/appearance';
 import { FlexRowVertCenter } from '../styling/internalLayout'
 
@@ -36,10 +35,8 @@ const Asterisk = styled.span`
     margin-left: 3px;
 `;
 
-export const FormInput = ({ label, type='' }) => {
-    const { value, bind, reset } = useInput('');
+const PrimaryFormInput = ({ name='', type='', value='', handleChange,  }) => {
     const [labelAlt, setLabelAlt] = useState(false);
-    
     const inputRef = useRef(null);
 
     const handleInputFocus = (e) => {
@@ -48,10 +45,13 @@ export const FormInput = ({ label, type='' }) => {
     
     return (
         <Field onClick={e => { inputRef.current.focus() }}>
-            <Label labelAlt={labelAlt}>{ label.toUpperCase() }
+            <Label labelAlt={labelAlt}>
+                { name.toUpperCase() }
                 <Asterisk>*</Asterisk>
             </Label>
-            <Input ref={ inputRef } type={type} { ...bind } onFocus={handleInputFocus} onBlur={handleInputFocus}/>
+            <Input name={name} type={type} value={value} onChange={handleChange} ref={inputRef} onFocus={handleInputFocus} onBlur={handleInputFocus} />
         </Field>
     )
 };
+
+export default PrimaryFormInput;
